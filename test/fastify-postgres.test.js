@@ -130,3 +130,43 @@ test('should throw without name option and multiple instances', ({ ok, same, pla
     fastify.close()
   })
 })
+
+test('should create a single query and execute it with the transaction() method', ({ error, ok, plan }) => {
+  plan(2)
+
+  const fastify = Fastify()
+  fastify.register(fastifyPostgres, { ...options, name: 'first_db' })
+
+  fastify.ready(async (err) => {
+    error(err)
+
+    const queryArray = ['SELECT NOW()']
+
+    const result = await fastify.pg.first_db.transaction(queryArray)
+    ok(result.length)
+
+    fastify.close()
+  })
+})
+
+test('should create an array of queries and execute it with the transaction() method', ({ error, ok, plan, same }) => {
+  plan(4)
+
+  const fastify = Fastify()
+  fastify.register(fastifyPostgres, { ...options, name: 'first_db' })
+
+  fastify.ready(async (err) => {
+    error(err)
+
+    const queryArray = ['SELECT 1+1 as result;', 'SELECT 4+4 as result;']
+
+    const result = await fastify.pg.first_db.transaction(queryArray)
+
+    ok(result.length)
+
+    same(result[0], 2)
+    same(result[1], 8)
+
+    fastify.close()
+  })
+})
