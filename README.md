@@ -42,17 +42,25 @@ fastify.get('/', async (request, reply) => {
 })
 ```
 
-The `query` property autimatically wraps the `sql` method. It gives you a powerful and flexible way of creating queries without opening yourself to SQL Injection attacks. [Read more here](https://www.atdatabases.org/docs/sql)
-
-The exposed object from the plugin is:
+### Exposed properties
 
 ```
 const db = {
-  query,  // use this to create queries in a simple way
+  query,// use this to create queries in a simple way
+  transaction,//  use this to create transactions
   sql,    // method to create queries in a safe-way
   db,     // database object
 }
 ```
+
+#### Query
+The `query` property automatically wraps the `sql` method. It gives you a powerful and flexible way of creating queries without opening yourself to SQL Injection attacks. [Read more here](https://www.atdatabases.org/docs/sql)
+
+
+#### Transaction
+The `transaction` property allows you to create a transaction that will be executed entirely or not at all. The underlying method accepts an array of queries. As with the `query` property, it automatically wraps the `sql` method to avoid SQL Injection attacks.
+If you want to know more about the underlying implementation you can read the [transaction](https://www.atdatabases.org/docs/mysql-guide-transactions) documentation from @databases.
+
 
 ## Options
 
