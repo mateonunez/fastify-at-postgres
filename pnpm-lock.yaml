@@ -3,26 +3,26 @@ lockfileVersion: 5.4
 specifiers:
   '@databases/pg': ^5.4.1
   '@fastify/pre-commit': ^2.0.2
-  '@types/node': ^18.11.15
-  fastify: ^4.10.2
-  fastify-plugin: ^4.4.0
+  '@types/node': ^18.11.18
+  fastify: ^4.11.0
+  fastify-plugin: ^4.5.0
   snazzy: ^9.0.0
   standard: ^17.0.0
-  tap: ^16.3.2
+  tap: ^16.3.3
   tsd: ^0.25.0
   typescript: ^4.9.4
 
 dependencies:
-  fastify-plugin: 4.4.0
+  fastify-plugin: 4.5.0
 
 devDependencies:
   '@databases/pg': 5.4.1
   '@fastify/pre-commit': 2.0.2
-  '@types/node': 18.11.17
-  fastify: 4.10.2
+  '@types/node': 18.11.18
+  fastify: 4.11.0
   snazzy: 9.0.0
   standard: 17.0.0
-  tap: 16.3.2_typescript@4.9.4
+  tap: 16.3.3_typescript@4.9.4
   tsd: 0.25.0
   typescript: 4.9.4
 
@@ -499,8 +499,8 @@ packages:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
     dev: true
 
-  /@types/node/18.11.17:
-    resolution: {integrity: sha512-HJSUJmni4BeDHhfzn6nF0sVmd1SMezP7/4F0Lq+aXzmp2xm9O7WXrUtHW/CHlYVtZUbByEvWidHqRtcJXGF2Ng==}
+  /@types/node/18.11.18:
+    resolution: {integrity: sha512-DHQpWGjyQKSHj3ebjFI/wRKcqQcdR+MoFBygntYOZytCqNfkd2ZC4ARDJ2DQqhjH5p85Nnd3jhUJIXrszFX/JA==}
     dev: true
 
   /@types/normalize-package-data/2.4.1:
@@ -1495,12 +1495,12 @@ packages:
     resolution: {integrity: sha512-cIusKBIt/R/oI6z/1nyfe2FvGKVTohVRfvkOhvx0nCEW+xf5NoCXjAHcWp93uOUBchzYcsvPlrapAdX1uW+YGg==}
     dev: true
 
-  /fastify-plugin/4.4.0:
-    resolution: {integrity: sha512-ovwFQG2qNy3jcCROiWpr94Hs0le+c7N/3t7m9aVwbFhkxcR/esp2xu25dP8e617HpQdmeDv+gFX4zagdUhDByw==}
+  /fastify-plugin/4.5.0:
+    resolution: {integrity: sha512-79ak0JxddO0utAXAQ5ccKhvs6vX2MGyHHMMsmZkBANrq3hXc1CHzvNPHOcvTsVMEPl5I+NT+RO4YKMGehOfSIg==}
     dev: false
 
-  /fastify/4.10.2:
-    resolution: {integrity: sha512-0T+4zI6N3S8ex0LCZi3H4FasJR4AzWw834fUkPWvV8r6GBJkLmAOfFxH8f5V29Plef24IK0QSQD/tz1Nx+1UOA==}
+  /fastify/4.11.0:
+    resolution: {integrity: sha512-JteZ8pjEqd+6n+azQnQfSJV8MUMxAmxbvC2Dx/Mybj039Lf/u3kda9Kq84uy/huCpqCzZoyHIZS5JFGF3wLztw==}
     dependencies:
       '@fastify/ajv-compiler': 3.5.0
       '@fastify/error': 3.2.0
@@ -3366,8 +3366,8 @@ packages:
       yaml: 1.10.2
     dev: true
 
-  /tap/16.3.2_typescript@4.9.4:
-    resolution: {integrity: sha512-4MWMObR8unbv5gAHHVW9F0MNk3opQMnLusSWvt4KBAnKmkwpBRKIfNF64fimQbcR4y9a7U9ISV7pCldlV3J8Pw==}
+  /tap/16.3.3_typescript@4.9.4:
+    resolution: {integrity: sha512-E6Ti4FaH3zUvOtl13GA60n8aodRj44S8Vu5efM84U5NmquJo4+y21+2VM9r9jR5iiEcce5dqvlrrwAhZ6r11xg==}
     engines: {node: '>=12'}
     hasBin: true
     peerDependencies:
