@@ -46,10 +46,10 @@ fastify.get('/', async (request, reply) => {
 
 ```
 const db = {
-  query,// use this to create queries in a simple way
-  transaction,//  use this to create transactions
-  sql,    // method to create queries in a safe-way
-  db,     // database object
+  query,        // use this to create queries in a simple way
+  transaction,  //  use this to create transactions
+  sql,          // method to create queries in a safe-way
+  db,           // database object
 }
 ```
 
