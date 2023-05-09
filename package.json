@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@fastify/pre-commit": "^2.0.2",
-    "@types/node": "^18.13.0",
+    "@types/node": "^20.1.1",
     "fastify": "^4.13.0",
     "snazzy": "^9.0.0",
     "standard": "^17.0.0",
