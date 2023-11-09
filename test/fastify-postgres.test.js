@@ -271,7 +271,7 @@ test('fastify-at-postgres allow to pass atdatabase options', ({ error, ok, plan 
 
   const fastify = Fastify()
 
-  fastify.register(fastifyPostgres, {
+  fastify.register(fastifyAtPostgres, {
     connectionString: 'postgres://postgres:postgres@127.0.0.1:5432/test',
     bigIntMode: 'string'
   })

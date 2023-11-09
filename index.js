@@ -42,7 +42,7 @@ async function fastifyAtPostgres (fastify, options, next) {
 
   const db = createConnectionPool({
     connectionString: connectionString || buildConnectionString({ host, user, password, database, port }),
-      ...opts
+    ...opts
   })
 
   fastify.addHook('onClose', (_, done) => {
