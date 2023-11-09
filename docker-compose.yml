@@ -2,13 +2,18 @@ version: "3.8"
 
 services:
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     ports:
       - "127.0.0.1:5432:5432"
     environment:
       POSTGRES_DB: test
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - fastify_postgres_network
 
