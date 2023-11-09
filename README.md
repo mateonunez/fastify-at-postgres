@@ -32,6 +32,23 @@ fastify.get('/', async (request, reply) => {
 })
 ```
 
+You can also connect using full postgres connection string:
+
+```js
+const Fastify = require('fastify')
+const fastifyAtPostgres = require('fastify-at-postgres')
+
+const fastify = fastify()
+fastify.register(fastifyAtPostgres, {
+  connectionString: 'postgres://postgres:postgres@localhost:5432/my_database'
+})
+
+fastify.get('/', async (request, reply) => {
+  const result = await fastify.pg.query('SELECT * FROM contributors')  
+  reply.send(result)
+})
+```
+
 ### Instance
 
 ```js
@@ -113,7 +130,7 @@ const result = await fastify.pg.task(task)
 The plugin accepts the following options:
 
 - `host` - The hostname of the database you are connecting to. (Default: `localhost`)
-- `port` - The port number to connect to. (Default: `3306`)
+- `port` - The port number to connect to. (Default: `5432`)
 - `user` - The Postgres user to authenticate as.
 - `password` - The password of that Postgres user.
 - `database` - Name of the database to use for this connection (Optional).
