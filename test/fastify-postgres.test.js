@@ -1,9 +1,9 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { Transform } = require('node:stream')
+const { test } = require('tap')
 const Fastify = require('fastify')
-const fastifyPostgres = require('..')
+const fastifyAtPostgres = require('..')
 
 const options = {
   host: 'localhost',
@@ -13,160 +13,255 @@ const options = {
   database: 'test'
 }
 
-test('fastify-at-postgres is correctly defined', ({ ok, plan }) => {
-  plan(1)
-
+test('fastify-postgres is correctly defined', async ({ ok }) => {
   const fastify = Fastify()
-  fastify.register(fastifyPostgres, options)
+  await fastify.register(fastifyAtPostgres, options)
 
-  fastify.ready(() => {
-    ok(fastify.pg)
-    fastify.close()
-  })
+  await fastify.ready()
+  ok(fastify.pg)
+  await fastify.close()
 })
 
-test('fastify-at-postgres can connect to a Postgres database', ({ error, ok, plan }) => {
-  plan(2)
+test('fastify-postgres can connect to a Postgres database', async ({ error, ok, teardown }) => {
+  teardown(() => fastify.close())
 
   const fastify = Fastify()
-  fastify.register(fastifyPostgres, options)
+  await fastify.register(fastifyAtPostgres, options)
 
-  fastify.ready(async (err) => {
-    error(err)
-
+  try {
     const result = await fastify.pg.query('SELECT NOW()')
     ok(result.length)
-
-    fastify.close()
-  })
+  } catch (err) {
+    error(err)
+  }
 })
 
-test('fastify-at-postgres can connect to a Postgres database with a connection string', ({ error, ok, plan }) => {
-  plan(2)
+test('fastify-postgres can connect to a Postgres database using a connection string', async ({ error, ok, teardown }) => {
+  teardown(() => fastify.close())
 
   const fastify = Fastify()
-  fastify.register(fastifyPostgres, { connectionString: 'postgres://postgres:postgres@localhost:5432/test' })
+  await fastify.register(fastifyAtPostgres, {
+    connectionString: 'postgres://postgres:postgres@localhost:5432/test'
+  })
 
-  fastify.ready(async (err) => {
-    error(err)
-
+  try {
     const result = await fastify.pg.query('SELECT NOW()')
     ok(result.length)
-
-    fastify.close()
-  })
-})
-
-test('should works with multiple instances', ({ error, ok, plan }) => {
-  plan(3)
-  const fastify = Fastify()
-
-  fastify.register(fastifyPostgres, { ...options, name: 'first_db' })
-  fastify.register(fastifyPostgres, { ...options, name: 'second_db' })
-
-  fastify.ready(async (err) => {
+  } catch (err) {
     error(err)
-
-    const resultFirst = await fastify.pg.first_db.query('SELECT NOW()')
-    ok(resultFirst.length)
-
-    const resultSecond = await fastify.pg.second_db.query('SELECT NOW()')
-    ok(resultSecond.length)
-
-    fastify.close()
-  })
+  }
 })
 
-test('should throw with missing options', ({ ok, same, plan }) => {
-  plan(2)
-  const fastify = Fastify()
-
-  fastify.register(fastifyPostgres)
-
-  fastify.ready((errors) => {
-    ok(errors)
-    same(errors.message, 'Missing required options')
-    fastify.close()
-  })
-})
-
-test('should throw with invalid connection string', ({ ok, same, plan }) => {
-  plan(2)
-  const fastify = Fastify()
-
-  fastify.register(fastifyPostgres, { connectionString: 'postgres://postgres:postgres@localhost:5432' })
-
-  fastify.ready((errors) => {
-    ok(errors)
-    same(errors.message, 'Invalid connection string')
-    fastify.close()
-  })
-})
-
-test('should throw with multiple instances and same name', ({ ok, same, plan }) => {
-  plan(2)
-  const fastify = Fastify()
-
-  fastify.register(fastifyPostgres, { ...options, name: 'first_db' })
-  fastify.register(fastifyPostgres, { ...options, name: 'first_db' })
-
-  fastify.ready((errors) => {
-    ok(errors)
-    same(errors.message, "fastify-postgres has already been registered with name 'first_db'")
-    fastify.close()
-  })
-})
-
-test('should throw without name option and multiple instances', ({ ok, same, plan }) => {
-  plan(2)
-  const fastify = Fastify()
-
-  fastify.register(fastifyPostgres, { ...options })
-  fastify.register(fastifyPostgres, { ...options })
-
-  fastify.ready((errors) => {
-    ok(errors)
-    same(errors.message, 'fastify-postgres or another pg plugin has already been registered')
-    fastify.close()
-  })
-})
-
-test('should create a single query and execute it with the transaction() method', ({ error, ok, plan }) => {
-  plan(2)
+test('should works with multiple instances', async ({ error, ok, teardown }) => {
+  teardown(() => fastify.close())
 
   const fastify = Fastify()
-  fastify.register(fastifyPostgres, { ...options, name: 'first_db' })
+  await fastify.register(fastifyAtPostgres, { ...options, name: 'first_db' })
+  await fastify.register(fastifyAtPostgres, { ...options, name: 'second_db' })
 
-  fastify.ready(async (err) => {
-    error(err)
-
-    const queryArray = ['SELECT NOW()']
-
-    const result = await fastify.pg.first_db.transaction(queryArray)
+  try {
+    const result = await fastify.pg.first_db.query('SELECT NOW()')
     ok(result.length)
-
-    fastify.close()
-  })
+    const result2 = await fastify.pg.second_db.query('SELECT NOW()')
+    ok(result2.length)
+  } catch (err) {
+    error(err)
+  }
 })
 
-test('should create an array of queries and execute it with the transaction() method', ({ error, ok, plan, same }) => {
-  plan(4)
+test('should throw with missing options', async ({ same, teardown }) => {
+  teardown(() => fastify.close())
 
   const fastify = Fastify()
-  fastify.register(fastifyPostgres, { ...options, name: 'first_db' })
+  try {
+    await fastify.register(fastifyAtPostgres, {})
+  } catch (err) {
+    same(err.message, 'Missing required options')
+  }
+})
 
-  fastify.ready(async (err) => {
+test('should throw with invalid connection string', async ({ same, teardown }) => {
+  teardown(() => fastify.close())
+
+  const fastify = Fastify()
+  try {
+    await fastify.register(fastifyAtPostgres, { connectionString: 'invalid' })
+  } catch (err) {
+    same(err.message, 'Invalid connection string')
+  }
+})
+
+test('should throw with multiple instances with same name', async ({ same, teardown }) => {
+  teardown(() => fastify.close())
+
+  const fastify = Fastify()
+  try {
+    await fastify.register(fastifyAtPostgres, { ...options, name: 'first_db' })
+    await fastify.register(fastifyAtPostgres, { ...options, name: 'first_db' })
+  } catch (err) {
+    same(err.message, "fastify-postgres has already been registered with name 'first_db'")
+  }
+})
+
+test('should throw without name option and multiple instances', async ({ same, teardown }) => {
+  teardown(() => fastify.close())
+
+  const fastify = Fastify()
+  try {
+    await fastify.register(fastifyAtPostgres, options)
+    await fastify.register(fastifyAtPostgres, options)
+  } catch (err) {
+    same(err.message, 'fastify-postgres or another pg plugin has already been registered')
+  }
+})
+
+test('should create a single query and execute it with the transaction() method', async ({ error, teardown, same }) => {
+  teardown(() => fastify.close())
+
+  const fastify = Fastify()
+
+  const instanceName = 'first_db'
+  await fastify.register(fastifyAtPostgres, { ...options, name: instanceName })
+
+  const tx = () => {
+    const result = fastify.pg[instanceName].transaction((db) => {
+      return db.query(fastify.pg[instanceName].sql`SELECT 1+1 as result;`)
+    })
+    return result
+  }
+
+  try {
+    const result = await fastify.pg[instanceName].transaction(tx)
+    same(result, [{ result: 2 }])
+  } catch (err) {
     error(err)
+  }
+})
 
-    const queryArray = ['SELECT 1+1 as result;', 'SELECT 4+4 as result;']
+test('should create an array of queries and execute it with the transaction() method', async ({ error, teardown, same }) => {
+  teardown(() => fastify.close())
 
-    const result = await fastify.pg.first_db.transaction(queryArray)
+  const fastify = Fastify()
 
-    ok(result.length)
+  const instanceName = 'first_db'
+  await fastify.register(fastifyAtPostgres, { ...options, name: instanceName })
 
-    same(result[0], 2)
-    same(result[1], 8)
+  const txs = [
+    () => {
+      return fastify.pg[instanceName].query('SELECT 1+1 as result;')
+    },
+    () => {
+      return fastify.pg[instanceName].query('SELECT 4+4 as result;')
+    }
+  ]
 
-    fastify.close()
+  try {
+    const result = await fastify.pg[instanceName].transaction(txs)
+    same(result, [[{ result: 2 }], [{ result: 8 }]])
+  } catch (err) {
+    error(err)
+  }
+})
+
+test('should throw if the transaction is not a function', async ({ same, teardown }) => {
+  teardown(() => fastify.close())
+
+  const fastify = Fastify()
+
+  const instanceName = 'first_db'
+  await fastify.register(fastifyAtPostgres, { ...options, name: instanceName })
+
+  try {
+    await fastify.pg[instanceName].transaction('not a function')
+  } catch (err) {
+    same(err.message, 'Transaction must be a function')
+  }
+})
+
+test('should throw if the array of transactions contains a non-function', async ({ same, teardown }) => {
+  teardown(() => fastify.close())
+
+  const fastify = Fastify()
+
+  const instanceName = 'first_db'
+  await fastify.register(fastifyAtPostgres, { ...options, name: instanceName })
+
+  const txs = [
+    () => {
+      return fastify.pg[instanceName].query('SELECT 1+1 as result;')
+    },
+    'not a function'
+  ]
+
+  try {
+    await fastify.pg[instanceName].transaction(txs)
+  } catch (err) {
+    same(err.message, 'Transaction must be a function')
+  }
+})
+
+test('should execute a task', async ({ error, same, teardown }) => {
+  teardown(() => fastify.close())
+
+  const fastify = Fastify()
+
+  const instanceName = 'first_db'
+  await fastify.register(fastifyAtPostgres, { ...options, name: instanceName })
+
+  const task = (db) => {
+    return db.query(fastify.pg[instanceName].sql`SELECT 1+1 as result;`)
+  }
+
+  try {
+    const result = await fastify.pg[instanceName].task(task)
+    same(result, [{ result: 2 }])
+  } catch (err) {
+    error(err)
+  }
+})
+
+test('should select on node iterable', async ({ same, teardown }) => {
+  teardown(() => fastify.close())
+  const fastify = Fastify()
+  const instanceName = 'first_db'
+  await fastify.register(fastifyAtPostgres, { ...options, name: instanceName })
+
+  for await (const row of fastify.pg[instanceName].query('SELECT 1+1 as result;', { type: 'iterable' })) {
+    same(row, { result: 2 })
+  }
+})
+
+test('should select on node stream', async ({ same, teardown }) => {
+  const stringify = new Transform({
+    writableObjectMode: true,
+    transform (chunk, _, callback) {
+      this.push(JSON.stringify(chunk) + '\n')
+      callback()
+    }
   })
+
+  teardown(() => fastify.close())
+  const fastify = Fastify()
+  const instanceName = 'first_db'
+  await fastify.register(fastifyAtPostgres, { ...options, name: instanceName })
+
+  const stream = fastify.pg[instanceName].query('SELECT 1+1 as result;', { type: 'stream' })
+  stream.pipe(stringify).pipe(process.stdout)
+
+  for await (const row of stream) {
+    same(row, { result: 2 })
+  }
+})
+
+test('should throw with invalid type', async ({ same, teardown }) => {
+  teardown(() => fastify.close())
+  const fastify = Fastify()
+  const instanceName = 'first_db'
+  await fastify.register(fastifyAtPostgres, { ...options, name: instanceName })
+
+  try {
+    await fastify.pg[instanceName].query('SELECT 1+1 as result;', { type: 'invalid' })
+  } catch (err) {
+    same(err.message, 'Invalid result type: invalid')
+  }
 })

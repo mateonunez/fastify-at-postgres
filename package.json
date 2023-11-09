@@ -15,6 +15,7 @@
     "test": "npm run lint && npm run unit && npm run typescript",
     "test:ci": "tap --coverage-report=lcov test/*.test.js && npm run typescript",
     "typescript": "tsd",
+    "postgres": "docker-compose up -d",
     "unit": "tap test/*.test.js",
     "unit:report": "tap test/test.js --cov --coverage-report=html --coverage-report=cobertura",
     "unit:verbose": "tap test/test.js -Rspec"
@@ -34,17 +35,18 @@
   },
   "homepage": "https://github.com/mateonunez/fastify-at-postgres#readme",
   "dependencies": {
-    "@databases/pg": "^5.4.1",
-    "fastify-plugin": "^4.5.0"
+    "fastify-plugin": "^4.5.1"
   },
   "devDependencies": {
-    "@fastify/pre-commit": "^2.0.2",
-    "@types/node": "^18.13.0",
-    "fastify": "^4.13.0",
+    "@databases/pg": "^5.5.0",
+    "@databases/sql": "3.3.0",
+    "@fastify/pre-commit": "^2.1.0",
+    "@types/node": "^20.9.0",
+    "fastify": "^4.24.3",
     "snazzy": "^9.0.0",
-    "standard": "^17.0.0",
-    "tap": "^16.3.4",
-    "tsd": "^0.25.0",
+    "standard": "^17.1.0",
+    "tap": "^16.3.9",
+    "tsd": "^0.29.0",
     "typescript": "^4.9.5"
   },
   "pre-commit": [
