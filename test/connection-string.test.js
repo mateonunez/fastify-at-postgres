@@ -32,6 +32,12 @@ test('validateConnectionString should return true for a valid connection string'
   ok(validateConnectionString(connectionString))
 })
 
+test('validateConnectionString should return true for a valid connection string using ip address', ({ ok, plan }) => {
+  plan(1)
+
+  ok(validateConnectionString('postgres://postgres:postgres@127.0.0.1:5432/test'))
+})
+
 test('validateConnectionString should return false for an invalid connection string', ({ notOk, plan }) => {
   plan(1)
 
