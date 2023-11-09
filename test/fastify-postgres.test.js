@@ -6,7 +6,7 @@ const Fastify = require('fastify')
 const fastifyAtPostgres = require('..')
 
 const options = {
-  host: 'localhost',
+  host: '127.0.0.1',
   port: 5432,
   user: 'postgres',
   password: 'postgres',
@@ -41,7 +41,7 @@ test('fastify-postgres can connect to a Postgres database using a connection str
 
   const fastify = Fastify()
   await fastify.register(fastifyAtPostgres, {
-    connectionString: 'postgres://postgres:postgres@localhost:5432/test'
+    connectionString: 'postgres://postgres:postgres@127.0.0.1:5432/test'
   })
 
   try {
