@@ -265,3 +265,29 @@ test('should throw with invalid type', async ({ same, teardown }) => {
     same(err.message, 'Invalid result type: invalid')
   }
 })
+
+test('fastify-at-postgres allow to pass atdatabase options', ({ error, ok, plan }) => {
+  plan(4)
+
+  const fastify = Fastify()
+
+  fastify.register(fastifyAtPostgres, {
+    connectionString: 'postgres://postgres:postgres@127.0.0.1:5432/test',
+    bigIntMode: 'string'
+  })
+
+  fastify.ready(async (err) => {
+    error(err)
+
+    const result = await fastify.pg.query('SELECT NOW()')
+    ok(result.length)
+
+    const numberResult = await fastify.pg.query('SELECT 1+1 as result')
+    ok(typeof numberResult[0].result === 'number')
+
+    const bigIntResult = await fastify.pg.query(`SELECT ${Number.MAX_SAFE_INTEGER} as result`)
+    ok(typeof bigIntResult[0].result === 'string')
+
+    fastify.close()
+  })
+})
